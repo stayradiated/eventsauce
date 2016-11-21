@@ -1,0 +1,42 @@
+<h1>Open your console...</h1>
+
+<script>
+	const BOLD = 'font-weight: bold;'
+	const REGULAR = 'font-weight: regular;'
+	const BLACK = 'color: black;'
+	const BLUE = 'color: blue;'
+	const GREY = 'color: grey;'
+
+	console.log('%cLoading...', GREY)
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/1.4.1/fingerprint2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.4/chance.min.js"></script>
+<script src="https://cdn.polyfill.io/v2/polyfill.js?features=fetch&flags=gated"></script>
+
+<script>(() => {
+	new Fingerprint2().get((result) => {
+    // generate a random username based on the browser fingerprint
+		const chance = new Chance(result)
+		const name = chance.word()
+
+		console.log(`Your name is: %c${name}`, BOLD + BLUE)
+		console.log(`%csend('Your message here')`, GREY)
+
+    // subscribe to chatroom events
+		const src = new window.EventSource(`/events?name=${name}`)
+		src.onmessage = (event) => {
+			const {name, message} = JSON.parse(event.data)
+      console.log(`%c${name}: %c${message}`, BOLD + BLUE, REGULAR + BLACK)
+		}
+
+    // post a message to the chatroom
+		window.send = (message) => {
+			fetch('/chat', {
+				method: 'POST',
+				headers: {'content-type': 'application/json'},
+				body: JSON.stringify({name, message}),
+			})
+		}
+	})
+})()</script>
