@@ -1,6 +1,7 @@
 <h1>Open your console...</h1>
 
 <script>
+  // because I like my console to have a bit of colour
   var BOLD = 'font-weight: bold;'
   var REGULAR = 'font-weight: regular;'
   var BLACK = 'color: black;'
@@ -12,23 +13,32 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/1.4.1/fingerprint2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.4/chance.min.js"></script>
+
+<!-- polyfill.io is really neat, you should check it out -->
 <script src="https://cdn.polyfill.io/v2/polyfill.js?features=fetch&flags=gated"></script>
 
 <script>
+  // This will generate a hash based on your browser fingerprint.
+  // I use it assign a username to each visitor without having to store
+  // any state.
   new Fingerprint2().get(function (result) {
-    // generate a random name based on the browser fingerprint
     var chance = new Chance(result)
     var name = chance.word()
 
+    // let the user know what their name is
     console.log(`Your name is: %c${name}`, BOLD + BLUE)
-    console.log(`%csend('Your message here')`, GREY)
+
+    // teach the user how to chat
+    console.log(`%csend('hello world')`, GREY)
 
     // subscribe to chatroom events
+    // note that we are also sending the username to the server
     var src = new window.EventSource(`/events?name=${name}`)
 
-    // subscribe to 'msg' events
+    // subscribe to 'msg' events that the server broadcasts
     src.addEventListener('msg', function (event) {
-      // parse data from server
+
+      // parse JSON data
       var data = JSON.parse(event.data)
       var name = data.name
       var message = data.message
@@ -37,7 +47,7 @@
       console.log(`%c${name}: %c${message}`, BOLD + BLUE, REGULAR + BLACK)
     })
 
-    // post a message to the chatroom
+    // this is a global function to post a message to the chatroom
     window.send = function send (message) {
       fetch('/chat', {
         method: 'POST',
