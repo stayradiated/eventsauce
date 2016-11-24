@@ -1,45 +1,49 @@
 <h1>Open your console...</h1>
 
 <script>
-	var BOLD = 'font-weight: bold;'
-	var REGULAR = 'font-weight: regular;'
-	var BLACK = 'color: black;'
-	var BLUE = 'color: blue;'
-	var GREY = 'color: grey;'
+  var BOLD = 'font-weight: bold;'
+  var REGULAR = 'font-weight: regular;'
+  var BLACK = 'color: black;'
+  var BLUE = 'color: blue;'
+  var GREY = 'color: grey;'
 
-	console.log('%cLoading...', GREY)
+  console.log('%cLoading...', GREY)
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/1.4.1/fingerprint2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.4/chance.min.js"></script>
 <script src="https://cdn.polyfill.io/v2/polyfill.js?features=fetch&flags=gated"></script>
 
-<script>(function init () {
-	new Fingerprint2().get(function (result) {
+<script>
+  new Fingerprint2().get(function (result) {
     // generate a random name based on the browser fingerprint
-		var chance = new Chance(result)
-		var name = chance.word()
+    var chance = new Chance(result)
+    var name = chance.word()
 
-		console.log(`Your name is: %c${name}`, BOLD + BLUE)
-		console.log(`%csend('Your message here')`, GREY)
+    console.log(`Your name is: %c${name}`, BOLD + BLUE)
+    console.log(`%csend('Your message here')`, GREY)
 
     // subscribe to chatroom events
-		var src = new window.EventSource(`/events?name=${name}`)
-		src.addEventListener('msg', function (event) {
-			var data = JSON.parse(event.data)
+    var src = new window.EventSource(`/events?name=${name}`)
+
+    // subscribe to 'msg' events
+    src.addEventListener('msg', function (event) {
+      // parse data from server
+      var data = JSON.parse(event.data)
       var name = data.name
       var message = data.message
 
+      // print message
       console.log(`%c${name}: %c${message}`, BOLD + BLUE, REGULAR + BLACK)
-		})
+    })
 
     // post a message to the chatroom
-		window.send = function send (message) {
-			fetch('/chat', {
-				method: 'POST',
-				headers: {'content-type': 'application/json'},
-				body: JSON.stringify({name, message}),
-			})
-		}
-	})
-}())</script>
+    window.send = function send (message) {
+      fetch('/chat', {
+        method: 'POST',
+        headers: {'content-type': 'application/json'},
+        body: JSON.stringify({name, message}),
+      })
+    }
+  })
+</script>
