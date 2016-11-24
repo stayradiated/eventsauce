@@ -4,7 +4,7 @@ const EventEmitter = require('events')
 const bodyParser = require('body-parser')
 
 // event id
-const MESSAGE = 'message'
+const MESSAGE = 'msg'
 
 // simple web server
 const app = express()

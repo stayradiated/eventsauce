@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Example EventSource server + client",
   "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
   "repository": {
     "url": "git@github.com:stayradiated/eventsauce.git",
     "type": "git"
