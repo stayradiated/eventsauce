@@ -1,11 +1,11 @@
 <h1>Open your console...</h1>
 
 <script>
-	const BOLD = 'font-weight: bold;'
-	const REGULAR = 'font-weight: regular;'
-	const BLACK = 'color: black;'
-	const BLUE = 'color: blue;'
-	const GREY = 'color: grey;'
+	var BOLD = 'font-weight: bold;'
+	var REGULAR = 'font-weight: regular;'
+	var BLACK = 'color: black;'
+	var BLUE = 'color: blue;'
+	var GREY = 'color: grey;'
 
 	console.log('%cLoading...', GREY)
 </script>
@@ -17,16 +17,19 @@
 <script>(function init () {
 	new Fingerprint2().get(function (result) {
     // generate a random name based on the browser fingerprint
-		const chance = new Chance(result)
-		const name = chance.word()
+		var chance = new Chance(result)
+		var name = chance.word()
 
 		console.log(`Your name is: %c${name}`, BOLD + BLUE)
 		console.log(`%csend('Your message here')`, GREY)
 
     // subscribe to chatroom events
-		const src = new window.EventSource(`/events?name=${name}`)
+		var src = new window.EventSource(`/events?name=${name}`)
 		src.addEventListener('msg', function (event) {
-			const {name, message} = JSON.parse(event.data)
+			var data = JSON.parse(event.data)
+      var name = data.name
+      var message = data.message
+
       console.log(`%c${name}: %c${message}`, BOLD + BLUE, REGULAR + BLACK)
 		})
 
